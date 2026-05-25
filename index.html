@@ -1,24 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Shadow Blade – Ninja RPG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <title>Shadow Blade</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="game-wrapper">
+
     <!-- HUD superior -->
     <div id="hud">
-      <div class="hud-block" id="player-hud">
+      <div class="hud-block">
         <span class="hud-label">⚔ SHADOW</span>
         <div class="hp-bar-wrap">
-          <div class="hp-bar" id="player-hp-bar"></div>
+          <div class="hp-bar player" id="player-hp-bar"></div>
         </div>
         <span class="hud-hp" id="player-hp-text">200/200</span>
       </div>
       <div class="hud-vs">VS</div>
-      <div class="hud-block right" id="enemy-hud">
+      <div class="hud-block right">
         <span class="hud-label">☠ SHOGUN</span>
         <div class="hp-bar-wrap">
           <div class="hp-bar enemy" id="enemy-hp-bar"></div>
@@ -27,45 +33,59 @@
       </div>
     </div>
 
-    <!-- Canvas principal -->
+    <!-- Canvas de juego -->
     <canvas id="gameCanvas"></canvas>
 
-    <!-- Cooldown / skill bar -->
-    <div id="skill-bar">
-      <div class="skill-btn" id="btn-move-left" title="← Mover">◄</div>
-      <div class="skill-btn" id="btn-move-right" title="→ Mover">►</div>
-      <div class="skill-btn action" id="btn-attack" title="[A] Atacar">
-        <span class="key">A</span>
-        <span class="label">ATAQUE</span>
-        <div class="cd-overlay" id="cd-attack"></div>
-      </div>
-      <div class="skill-btn action skill" id="btn-skill" title="[S] Skill">
-        <span class="key">S</span>
-        <span class="label">SKILL</span>
-        <div class="cd-overlay" id="cd-skill"></div>
-      </div>
-      <div class="skill-btn action dash" id="btn-dash" title="[D] Dash">
-        <span class="key">D</span>
-        <span class="label">DASH</span>
-        <div class="cd-overlay" id="cd-dash"></div>
-      </div>
-    </div>
+    <!-- Controles táctiles – layout tipo RPG móvil -->
+    <div id="controls">
 
-    <!-- Overlay de pantalla completa (victoria/derrota/start) -->
+      <!-- Lado izquierdo: D-Pad / joystick virtual -->
+      <div id="dpad-zone">
+        <div id="dpad">
+          <div id="dpad-left"  class="dpad-btn">◄</div>
+          <div id="dpad-mid"></div>
+          <div id="dpad-right" class="dpad-btn">►</div>
+        </div>
+      </div>
+
+      <!-- Lado derecho: botones de acción -->
+      <div id="action-zone">
+        <div id="btn-skill"  class="act-btn skill-btn">
+          <span class="act-icon">✦</span>
+          <span class="act-label">SKILL</span>
+          <div class="cd-ring" id="cd-skill"></div>
+        </div>
+        <div id="btn-dash"   class="act-btn dash-btn">
+          <span class="act-icon">≫</span>
+          <span class="act-label">DASH</span>
+          <div class="cd-ring" id="cd-dash"></div>
+        </div>
+        <div id="btn-attack" class="act-btn attack-btn">
+          <span class="act-icon">⚔</span>
+          <span class="act-label">ATK</span>
+          <div class="cd-ring" id="cd-attack"></div>
+        </div>
+      </div>
+
+    </div><!-- /controls -->
+
+    <!-- Overlay inicio / victoria / derrota -->
     <div id="overlay" class="active">
       <div id="overlay-content">
+        <div id="overlay-deco">忍</div>
         <h1 id="overlay-title">SHADOW BLADE</h1>
-        <p id="overlay-sub">Un ninja. Un shogun. Una batalla.</p>
+        <p  id="overlay-sub">Un ninja. Un shogun. Una batalla.</p>
         <button id="overlay-btn">▶ COMENZAR</button>
         <div id="controls-hint">
-          <span>← → Moverse</span>
-          <span>A Atacar</span>
-          <span>S Skill</span>
-          <span>D Dash</span>
+          <span>⬅➡ Mover</span>
+          <span>⚔ Atacar</span>
+          <span>✦ Skill</span>
+          <span>≫ Dash</span>
         </div>
       </div>
     </div>
-  </div>
+
+  </div><!-- /game-wrapper -->
 
   <script src="game.js"></script>
 </body>
