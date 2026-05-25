@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Shadow Blade – Ninja RPG</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-wrapper">
+    <!-- HUD superior -->
+    <div id="hud">
+      <div class="hud-block" id="player-hud">
+        <span class="hud-label">⚔ SHADOW</span>
+        <div class="hp-bar-wrap">
+          <div class="hp-bar" id="player-hp-bar"></div>
+        </div>
+        <span class="hud-hp" id="player-hp-text">200/200</span>
+      </div>
+      <div class="hud-vs">VS</div>
+      <div class="hud-block right" id="enemy-hud">
+        <span class="hud-label">☠ SHOGUN</span>
+        <div class="hp-bar-wrap">
+          <div class="hp-bar enemy" id="enemy-hp-bar"></div>
+        </div>
+        <span class="hud-hp" id="enemy-hp-text">500/500</span>
+      </div>
+    </div>
+
+    <!-- Canvas principal -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Cooldown / skill bar -->
+    <div id="skill-bar">
+      <div class="skill-btn" id="btn-move-left" title="← Mover">◄</div>
+      <div class="skill-btn" id="btn-move-right" title="→ Mover">►</div>
+      <div class="skill-btn action" id="btn-attack" title="[A] Atacar">
+        <span class="key">A</span>
+        <span class="label">ATAQUE</span>
+        <div class="cd-overlay" id="cd-attack"></div>
+      </div>
+      <div class="skill-btn action skill" id="btn-skill" title="[S] Skill">
+        <span class="key">S</span>
+        <span class="label">SKILL</span>
+        <div class="cd-overlay" id="cd-skill"></div>
+      </div>
+      <div class="skill-btn action dash" id="btn-dash" title="[D] Dash">
+        <span class="key">D</span>
+        <span class="label">DASH</span>
+        <div class="cd-overlay" id="cd-dash"></div>
+      </div>
+    </div>
+
+    <!-- Overlay de pantalla completa (victoria/derrota/start) -->
+    <div id="overlay" class="active">
+      <div id="overlay-content">
+        <h1 id="overlay-title">SHADOW BLADE</h1>
+        <p id="overlay-sub">Un ninja. Un shogun. Una batalla.</p>
+        <button id="overlay-btn">▶ COMENZAR</button>
+        <div id="controls-hint">
+          <span>← → Moverse</span>
+          <span>A Atacar</span>
+          <span>S Skill</span>
+          <span>D Dash</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
