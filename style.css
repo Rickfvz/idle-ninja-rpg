@@ -1,0 +1,377 @@
+/* ============================================================
+   SHADOW BLADE – style.css  |  Mobile-first RPG layout
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Rajdhani:wght@500;700&display=swap');
+
+:root {
+  --bg:      #0a0a0f;
+  --panel:   #0e0e18;
+  --border:  #22223a;
+  --gold:    #d4a017;
+  --red:     #c0392b;
+  --blue:    #2980b9;
+  --green:   #1e8449;
+  --text:    #dde0f0;
+  --muted:   #5a5a7a;
+
+  /* Safe areas para iPhone con notch / Dynamic Island */
+  --safe-top:    env(safe-area-inset-top,    0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left,   0px);
+  --safe-right:  env(safe-area-inset-right,  0px);
+
+  /* Altura del HUD y controles – ajustados en JS también */
+  --hud-h:  56px;
+  --ctrl-h: 140px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  height: 100%;
+  /* Evita el bounce scroll en iOS */
+  overscroll-behavior: none;
+}
+
+body {
+  height: 100%;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--text);
+  overflow: hidden;
+  touch-action: none;          /* bloquea scroll/zoom táctil */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ── Wrapper – ocupa 100% de la pantalla ── */
+#game-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  height: 100dvh;              /* dvh respeta la barra del navegador */
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ──────────────────────────────────────────
+   HUD
+────────────────────────────────────────── */
+#hud {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  padding-top: calc(8px + var(--safe-top));
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  min-height: var(--hud-h);
+}
+
+.hud-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.hud-block.right { align-items: flex-end; }
+
+.hud-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.hp-bar-wrap {
+  width: 100%;
+  height: 10px;
+  background: #111120;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.hp-bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 5px;
+  transition: width 0.25s ease;
+}
+.hp-bar.player { background: linear-gradient(90deg, #922b21, #e74c3c, #ff8a80); }
+.hp-bar.enemy  { background: linear-gradient(90deg, #4a0000, #9b1515, #c0392b); }
+
+.hud-hp {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+.hud-vs {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ── Canvas – flex:1 ocupa todo el espacio restante ── */
+#gameCanvas {
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-height: 0;               /* necesario para flex shrink en iOS */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #000;
+}
+
+/* ──────────────────────────────────────────
+   ZONA DE CONTROLES
+────────────────────────────────────────── */
+#controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  padding-bottom: calc(10px + var(--safe-bottom));
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  min-height: var(--ctrl-h);
+  gap: 10px;
+}
+
+/* ── D-Pad (lado izquierdo) ── */
+#dpad-zone {
+  flex: 0 0 auto;
+}
+
+#dpad {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dpad-btn {
+  width: 60px;
+  height: 60px;
+  background: #181826;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.08s, border-color 0.08s, transform 0.06s;
+  /* Área de toque grande */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dpad-btn:active,
+.dpad-btn.pressed {
+  background: #252540;
+  border-color: #5a5a9a;
+  color: var(--text);
+  transform: scale(0.93);
+}
+
+#dpad-mid {
+  width: 10px;
+}
+
+/* ── Botones de acción (lado derecho) ── */
+#action-zone {
+  flex: 0 0 auto;
+  position: relative;
+  width: 160px;
+  height: 110px;
+}
+
+.act-btn {
+  position: absolute;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.07s, filter 0.07s;
+  -webkit-tap-highlight-color: transparent;
+  overflow: visible;
+}
+
+.act-btn:active,
+.act-btn.pressed {
+  transform: scale(0.88);
+  filter: brightness(1.3);
+}
+
+/* Posición tipo gamepad triangular */
+.attack-btn {
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 40% 35%, #7b1a1a, #3d0a0a);
+  border-color: var(--red);
+  box-shadow: 0 0 12px rgba(192,57,43,0.4), inset 0 1px 0 rgba(255,120,120,0.15);
+}
+
+.skill-btn {
+  right: 70px;
+  top: 0;
+  background: radial-gradient(circle at 40% 35%, #0d3d6e, #071a2e);
+  border-color: var(--blue);
+  box-shadow: 0 0 12px rgba(41,128,185,0.4), inset 0 1px 0 rgba(100,180,255,0.15);
+}
+
+.dash-btn {
+  right: 0;
+  top: 0;
+  background: radial-gradient(circle at 40% 35%, #0d3d1e, #061a0d);
+  border-color: var(--green);
+  box-shadow: 0 0 12px rgba(30,132,73,0.4), inset 0 1px 0 rgba(80,220,120,0.15);
+}
+
+.act-icon {
+  font-size: 20px;
+  line-height: 1;
+  color: #fff;
+}
+
+.act-label {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── Cooldown ring (SVG-free: borde animado) ── */
+.cd-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.12);
+  pointer-events: none;
+  /* La animación se controla desde JS usando clip-path */
+  transition: opacity 0.2s;
+}
+
+/* ──────────────────────────────────────────
+   OVERLAY (inicio / win / lose)
+────────────────────────────────────────── */
+#overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 4, 12, 0.93);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+#overlay.active { display: flex; }
+
+#overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 24px;
+  text-align: center;
+  max-width: 320px;
+}
+
+#overlay-deco {
+  font-size: 54px;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(212,160,23,0.6);
+  line-height: 1;
+  animation: pulse-deco 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-deco {
+  0%,100% { text-shadow: 0 0 20px rgba(212,160,23,0.4); }
+  50%      { text-shadow: 0 0 50px rgba(212,160,23,0.9); }
+}
+
+#overlay-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(18px, 7vw, 28px);
+  color: var(--gold);
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+
+#overlay-sub {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+#overlay-btn {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 36px;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(192,57,43,0.5);
+  transition: transform 0.1s;
+  /* Área de toque generosa */
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+#overlay-btn:active { transform: scale(0.94); }
+
+#controls-hint {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--muted);
+}
+#controls-hint span {
+  background: #131320;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+/* ── Desktop: centrar y dar sombra ── */
+@media (min-width: 540px) {
+  #game-wrapper {
+    margin: auto;
+    box-shadow: 0 0 80px rgba(0,0,0,0.9);
+  }
+}
+
+/* ── Landscape en móvil: reducir controles ── */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root { --ctrl-h: 100px; }
+  #hud { min-height: 44px; padding: 6px 12px; }
+  .dpad-btn { width: 50px; height: 50px; font-size: 18px; }
+  .act-btn  { width: 48px; height: 48px; }
+  #action-zone { width: 140px; height: 96px; }
+  .act-icon { font-size: 17px; }
+}
