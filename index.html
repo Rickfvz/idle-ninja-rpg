@@ -116,6 +116,8 @@
     <button class="btn btn-primary" onclick="confirmClass()" id="btn-confirm-class" disabled>⚡ DESPERTAR CLASE</button>
   </div>
 
+
+
   <!-- ════════════════════════════════════════
        SCREEN: INVENTARIO
   ════════════════════════════════════════ -->
@@ -147,6 +149,7 @@
       <div id="inv-consumables-list" style="padding:0 12px;display:flex;flex-direction:column;gap:4px">
         <!-- renderizado por JS -->
       </div>
+
     </div>
   </div><!-- /#screen-inventory -->
 
@@ -441,9 +444,6 @@
     </div>
 
     <!-- ═══ ACTION MENUS ═══ -->
-    <!-- Backdrop para cerrar menú al tocar fuera -->
-    <div class="menu-backdrop" id="menu-backdrop" onclick="closeAllMenus()"></div>
-
     <div class="action-menus">
 
       <!-- MENÚ ATAQUE -->
@@ -726,6 +726,9 @@
 
     </div><!-- /#craft-panel -->
   </div><!-- /.crafting-overlay -->
+
+  <!-- Backdrop global — fuera de screen-battle para recibir clicks en Android -->
+  <div class="menu-backdrop" id="menu-backdrop" onclick="closeAllMenus()"></div>
 
 </body>
 </html>
