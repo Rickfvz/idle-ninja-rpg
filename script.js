@@ -350,6 +350,8 @@ function startBattle() {
   if (!player) return;
   document.querySelectorAll('.result-overlay').forEach(o => o.classList.remove('active'));
   stopHubParticles();
+  // Mover dropdowns al body para evitar stacking context de screen-battle
+  setTimeout(initMenuPortals, 50);
 
   // Restaurar recursos entre combates
   const hpRec = Math.floor(player.stats.hp * HP_RECOVERY_AFTER_BATTLE);
@@ -553,6 +555,22 @@ function setLog(html) {
 }
 
 // ===== ACTION MENUS =====
+
+
+// ── PORTAL: mover dropdowns al body para escapar del stacking context ──
+// En Android WebView, position:fixed dentro de position:fixed no recibe clicks
+// La solución es mover los dropdowns al body como portales
+function initMenuPortals() {
+  const body = document.body;
+  ['menu-attack', 'menu-util'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.parentElement !== body) {
+      // Guardar referencia al grupo original
+      el._originalParent = el.parentElement;
+      body.appendChild(el);
+    }
+  });
+}
 
 function toggleMenu(menuId) {
   if (menuId !== 'menu-util') closeItemsSubmenu();
