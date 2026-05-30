@@ -63,7 +63,7 @@ body {
 #screen-battle.active {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  overflow: hidden;
+  overflow: visible; /* NO hidden — bloquea clicks de fixed children en Android */
   padding: 10px 12px 8px;
   gap: 6px;
   justify-content: space-between;
@@ -1029,17 +1029,19 @@ body {
   border-radius: 12px 12px 0 0;
   padding: 8px 10px 10px;
   animation: dropUp 0.22s ease;
-  /* Fijo en pantalla — encima de la arena, debajo de los toggles */
+  /* Fijo en pantalla — fuera del stacking context de screen-battle */
   position: fixed;
   bottom: 0;
   left: 0; right: 0;
   max-width: 480px;
   margin: 0 auto;
-  z-index: 200;
+  z-index: 9999;
   box-shadow: 0 -4px 32px rgba(0,0,0,0.7), 0 -1px 0 rgba(0,212,255,0.1);
   max-height: 55vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  pointer-events: auto; /* garantizar clicks en Android */
+  isolation: isolate;   /* crear contexto propio */
 }
 .menu-dropdown.open { display: flex; }
 
@@ -1048,8 +1050,9 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 199;
+  z-index: 9998;
   background: rgba(0,0,0,0.35);
+  pointer-events: auto;
 }
 .menu-backdrop.active { display: block; }
 
