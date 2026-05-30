@@ -1,92 +1,731 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0a0a0f" />
-  <title>Shadow Blade</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Shadow Blade — Ninja RPG</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="game-wrapper">
+<div id="app">
 
-    <!-- HUD superior -->
-    <div id="hud">
-      <div class="hud-block">
-        <span class="hud-label">⚔ SHADOW</span>
-        <div class="hp-bar-wrap">
-          <div class="hp-bar player" id="player-hp-bar"></div>
-        </div>
-        <span class="hud-hp" id="player-hp-text">200/200</span>
+  <!-- ════════════════════════════════════════
+       SCREEN: TÍTULO
+  ════════════════════════════════════════ -->
+  <div id="screen-title" class="screen active">
+    <div class="title-logo">
+      <h1>SHADOW<br>BLADE</h1>
+      <div class="sub">NINJA RPG</div>
+    </div>
+    <div class="ninja-silhouette">
+      <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="80" cy="95" rx="22" ry="30" fill="#0a1a2e" stroke="#00d4ff" stroke-width="1.5"/>
+        <circle cx="80" cy="52" r="20" fill="#0a1a2e" stroke="#00d4ff" stroke-width="1.5"/>
+        <rect x="62" y="55" width="36" height="14" rx="4" fill="#00d4ff" opacity="0.3"/>
+        <rect x="62" y="55" width="36" height="14" rx="4" stroke="#00d4ff" stroke-width="1"/>
+        <rect x="68" y="58" width="10" height="5" rx="2" fill="#00d4ff"/>
+        <rect x="82" y="58" width="10" height="5" rx="2" fill="#00d4ff"/>
+        <line x1="105" y1="30" x2="140" y2="90" stroke="#00d4ff" stroke-width="3" stroke-linecap="round"/>
+        <rect x="100" y="65" width="18" height="4" rx="2" fill="#ffd700" transform="rotate(60 109 67)"/>
+        <path d="M 60 65 Q 40 80 50 100" stroke="#00d4ff" stroke-width="3" fill="none" opacity="0.6"/>
+        <rect x="62" y="118" width="14" height="28" rx="6" fill="#0a1a2e" stroke="#00d4ff" stroke-width="1.5"/>
+        <rect x="84" y="118" width="14" height="28" rx="6" fill="#0a1a2e" stroke="#00d4ff" stroke-width="1.5"/>
+        <circle cx="80" cy="80" r="70" fill="url(#glow)" opacity="0.15"/>
+        <defs>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00d4ff"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="title-buttons">
+      <button class="btn btn-primary" id="btn-new-game" onclick="startNewGame()">⚔️ NUEVA PARTIDA</button>
+      <button class="btn btn-gold"    id="btn-continue" onclick="continueGame()" style="display:none">▶ CONTINUAR PARTIDA</button>
+      <button class="btn btn-danger btn-sm" id="btn-reset" onclick="confirmReset()" style="display:none">🗑️ BORRAR PROGRESO</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: CREACIÓN DE PERSONAJE
+  ════════════════════════════════════════ -->
+  <div id="screen-create" class="screen">
+    <div class="screen-title">⚔ CREA TU NINJA</div>
+    <div class="name-input-wrap">
+      <label>Nombre del ninja</label>
+      <input type="text" id="ninja-name" placeholder="Ej: Kage..." maxlength="16">
+    </div>
+    <div class="novice-info-box">
+      <div class="novice-icon">🥷</div>
+      <div>
+        <div class="novice-title">NINJA NOVATO</div>
+        <div class="novice-desc">Comienza tu camino. Al llegar al <span class="highlight-text">Nivel 5</span> despertarás tu verdadera especialización.</div>
       </div>
-      <div class="hud-vs">VS</div>
-      <div class="hud-block right">
-        <span class="hud-label">☠ SHOGUN</span>
-        <div class="hp-bar-wrap">
-          <div class="hp-bar enemy" id="enemy-hp-bar"></div>
+    </div>
+    <button class="btn btn-primary" onclick="createCharacter()">⚔️ COMENZAR AVENTURA</button>
+    <button class="btn btn-gold btn-sm" onclick="showScreen('hub')" style="margin-top:4px">⛩️ BASE</button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: SELECCIÓN DE CLASE (nivel 5)
+  ════════════════════════════════════════ -->
+  <div id="screen-class" class="screen">
+    <div class="class-awakening-header">
+      <div class="awakening-glow">⚡</div>
+      <h2>HAS DESPERTADO TU<br>VERDADERO CAMINO NINJA</h2>
+      <p>Esta decisión es permanente. Elige con sabiduría.</p>
+    </div>
+    <div class="class-cards">
+      <div class="class-card" onclick="selectClass('sword')" id="card-sword">
+        <div class="class-icon">🗡️</div>
+        <div class="class-info">
+          <h3>SWORD NINJA</h3>
+          <p>Equilibrio entre velocidad y defensa táctica</p>
+          <div class="class-bonuses">
+            <span class="badge spd">+1 SPD/nv</span>
+            <span class="badge def">+1 DEF/nv</span>
+            <span class="badge dodge">+0.3% Dodge/nv</span>
+          </div>
         </div>
-        <span class="hud-hp" id="enemy-hp-text">500/500</span>
+      </div>
+      <div class="class-card" onclick="selectClass('axe')" id="card-axe">
+        <div class="class-icon">🪓</div>
+        <div class="class-info">
+          <h3>AXE NINJA</h3>
+          <p>Velocidad y golpes críticos devastadores</p>
+          <div class="class-bonuses">
+            <span class="badge spd">+1 SPD/nv</span>
+            <span class="badge atk">+1 ATK/nv</span>
+            <span class="badge crit">+0.3% Crit/nv</span>
+          </div>
+        </div>
+      </div>
+      <div class="class-card" onclick="selectClass('hammer')" id="card-hammer">
+        <div class="class-icon">🔨</div>
+        <div class="class-info">
+          <h3>HAMMER NINJA</h3>
+          <p>Tanque resistente, casi indestructible</p>
+          <div class="class-bonuses">
+            <span class="badge spd">+1 SPD/nv</span>
+            <span class="badge hp">+4 HP/nv</span>
+            <span class="badge def">+1 DEF/nv</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="confirmClass()" id="btn-confirm-class" disabled>⚡ DESPERTAR CLASE</button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: INVENTARIO
+  ════════════════════════════════════════ -->
+  <div id="screen-inventory" class="screen">
+    <div class="shop-content">
+
+      <!-- HEADER -->
+      <div class="shop-header">
+        <div class="shop-title">🎒 INVENTARIO</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="shop-gold-display">
+            <span class="shop-gold-icon">💰</span>
+            <span class="shop-gold-amount" id="inv-gold-display">0</span>
+          </div>
+          <button class="hub-icon-btn" onclick="showScreen('hub')">⛩️</button>
+        </div>
+      </div>
+
+      <!-- MATERIALES -->
+      <div class="craft-section-title">Materiales</div>
+      <div id="inv-materials-list" style="padding:0 12px;display:flex;flex-direction:column;gap:4px">
+        <!-- renderizado por JS -->
+      </div>
+
+      <div class="craft-divider"></div>
+
+      <!-- CONSUMIBLES -->
+      <div class="craft-section-title">Consumibles</div>
+      <div id="inv-consumables-list" style="padding:0 12px;display:flex;flex-direction:column;gap:4px">
+        <!-- renderizado por JS -->
+      </div>
+    </div>
+  </div><!-- /#screen-inventory -->
+
+  <!-- ════════════════════════════════════════
+       SCREEN: HOME HUB
+  ════════════════════════════════════════ -->
+  <div id="screen-hub" class="screen">
+    <canvas id="hub-canvas"></canvas>
+    <div class="hub-content">
+
+      <!-- HEADER -->
+      <header class="hub-header">
+        <div class="hub-logo">
+          <span class="hub-logo-icon">🥷</span>
+          <div>
+            <span class="hub-logo-text">SHADOW BLADE</span>
+            <span class="hub-logo-sub">NINJA RPG</span>
+          </div>
+        </div>
+        <div class="hub-header-actions">
+          <button class="hub-icon-btn" onclick="showScreen('status')" title="Perfil">📊</button>
+          <button class="hub-icon-btn" onclick="showScreen('title')" title="Menú principal">🏠</button>
+        </div>
+      </header>
+
+      <!-- PLAYER CARD -->
+      <div class="hub-player-card">
+        <div class="hub-player-inner">
+          <div class="hub-avatar">
+            <div class="hub-avatar-glow"></div>
+            <span class="hub-avatar-sprite" id="hub-sprite">🥷</span>
+            <div class="hub-avatar-shadow"></div>
+          </div>
+          <div class="hub-player-info">
+            <div class="hub-player-name" id="hub-name">—</div>
+            <div class="hub-player-class" id="hub-class">Ninja Novato</div>
+            <div class="hub-bar-group">
+              <div class="hub-bar-row">
+                <span class="hub-bar-icon">❤️</span>
+                <div class="hub-bar-track">
+                  <div class="hub-bar-fill hp" id="hub-hp-bar" style="width:100%"></div>
+                </div>
+                <span class="hub-bar-val" id="hub-hp-val">100/100</span>
+              </div>
+              <div class="hub-bar-row">
+                <span class="hub-bar-icon">💧</span>
+                <div class="hub-bar-track">
+                  <div class="hub-bar-fill mp" id="hub-mp-bar" style="width:100%"></div>
+                </div>
+                <span class="hub-bar-val" id="hub-mp-val">50/50</span>
+              </div>
+              <div class="hub-bar-row">
+                <span class="hub-bar-icon">⭐</span>
+                <div class="hub-bar-track">
+                  <div class="hub-bar-fill xp" id="hub-xp-bar" style="width:0%"></div>
+                </div>
+                <span class="hub-bar-val" id="hub-xp-val">0/100</span>
+              </div>
+            </div>
+            <div id="hub-regen-status" style="margin-top:6px;min-height:16px"></div>
+          </div>
+          <div class="hub-player-stats">
+            <!-- Círculo de nivel -->
+            <div class="hub-level-badge">
+              <span class="hub-level-num" id="hub-level">1</span>
+              <span class="hub-level-label">LVL</span>
+            </div>
+            <!-- Row compacto: victorias y oro -->
+            <div class="hub-compact-stats">
+              <div class="hub-compact-item wins">
+                <span>⚔</span>
+                <span id="hub-wins">0</span>
+              </div>
+              <span class="hub-compact-sep">|</span>
+              <div class="hub-compact-item gold">
+                <span>💰</span>
+                <span id="hub-gold">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCORDION MENU -->
+      <div class="hub-menu">
+
+        <!-- BATALLA -->
+        <div class="hub-accordion" id="hub-acc-battle">
+          <button class="hub-accordion-header" onclick="toggleHubAccordion('hub-acc-battle')">
+            <span class="hub-acc-icon">⚔️</span>
+            <span class="hub-acc-label">BATALLA</span>
+            <span class="hub-acc-arrow">▼</span>
+          </button>
+          <div class="hub-accordion-body">
+            <div class="hub-accordion-inner">
+              <button class="hub-action-btn highlight" onclick="hubStartBattle()">
+                <span class="hub-btn-icon">⚡</span>
+                <div><span class="hub-btn-text">Combate Rápido</span><span class="hub-btn-badge">Disponible</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">🏚️</span>
+                <div><span class="hub-btn-text">Dungeon</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">💀</span>
+                <div><span class="hub-btn-text">Boss</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">🏟️</span>
+                <div><span class="hub-btn-text">Arena</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- INVENTARIO -->
+        <div class="hub-accordion" id="hub-acc-inv" style="border-color:rgba(46,204,113,0.15)">
+          <button class="hub-accordion-header" onclick="toggleHubAccordion('hub-acc-inv')">
+            <span class="hub-acc-icon">🎒</span>
+            <span class="hub-acc-label">INVENTARIO</span>
+            <span id="inv-materials-count" class="inv-materials-badge"></span>
+            <span class="hub-acc-arrow">▼</span>
+          </button>
+          <div class="hub-accordion-body">
+            <div class="hub-accordion-inner">
+              <button class="hub-action-btn highlight" onclick="openCrafting()">
+                <span class="hub-btn-icon">⚗</span>
+                <div><span class="hub-btn-text">Crafting</span><span class="hub-btn-badge">Disponible</span></div>
+              </button>
+              <button class="hub-action-btn" onclick="openInventory()">
+                <span class="hub-btn-icon">🎒</span>
+                <div><span class="hub-btn-text">Ver Inventario</span><span class="hub-btn-badge">Materiales y pociones</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">⚔️</span>
+                <div><span class="hub-btn-text">Armas</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">🛡️</span>
+                <div><span class="hub-btn-text">Equipamiento</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MISIONES -->
+        <div class="hub-accordion" id="hub-acc-quest">
+          <button class="hub-accordion-header" onclick="toggleHubAccordion('hub-acc-quest')">
+            <span class="hub-acc-icon">📜</span>
+            <span class="hub-acc-label">MISIONES</span>
+            <span class="hub-acc-arrow">▼</span>
+          </button>
+          <div class="hub-accordion-body">
+            <div class="hub-accordion-inner">
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">🎯</span>
+                <div><span class="hub-btn-text">Diarias</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">📖</span>
+                <div><span class="hub-btn-text">Historia</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIENDA -->
+        <div class="hub-accordion" id="hub-acc-shop" style="border-color:rgba(255,215,0,0.1);opacity:0.7">
+          <button class="hub-accordion-header" onclick="toggleHubAccordion('hub-acc-shop')">
+            <span class="hub-acc-icon">🏪</span>
+            <span class="hub-acc-label">MERCADO</span>
+            <span class="hub-acc-arrow">▼</span>
+          </button>
+          <div class="hub-accordion-body">
+            <div class="hub-accordion-inner">
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">⚔️</span>
+                <div><span class="hub-btn-text">Armas</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">🛡️</span>
+                <div><span class="hub-btn-text">Armaduras</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PERFIL -->
+        <div class="hub-accordion" id="hub-acc-profile">
+          <button class="hub-accordion-header" onclick="toggleHubAccordion('hub-acc-profile')">
+            <span class="hub-acc-icon">👤</span>
+            <span class="hub-acc-label">PERFIL</span>
+            <span class="hub-acc-arrow">▼</span>
+          </button>
+          <div class="hub-accordion-body">
+            <div class="hub-accordion-inner">
+              <button class="hub-action-btn" onclick="showScreen('status')">
+                <span class="hub-btn-icon">📊</span>
+                <div><span class="hub-btn-text">Estadísticas</span><span class="hub-btn-badge">Ver detalle</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">✨</span>
+                <div><span class="hub-btn-text">Habilidades</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+              <button class="hub-action-btn locked">
+                <span class="hub-btn-icon">🏆</span>
+                <div><span class="hub-btn-text">Logros</span><span class="hub-btn-badge">Próximamente</span></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.hub-menu -->
+
+      <!-- TIP CARD -->
+      <div class="hub-tip-card">
+        <span class="hub-tip-icon">🌙</span>
+        <div class="hub-tip-body">
+          <div class="hub-tip-label">Sabiduría Ninja</div>
+          <div class="hub-tip-text" id="hub-tip-text">"Las sombras favorecen a los pacientes."</div>
+        </div>
+      </div>
+
+    </div><!-- /.hub-content -->
+  </div><!-- /#screen-hub -->
+
+  <!-- ════════════════════════════════════════
+       SCREEN: BATALLA
+  ════════════════════════════════════════ -->
+  <div id="screen-battle" class="screen">
+
+    <!-- Header info -->
+    <div class="battle-header">
+      <div class="battle-player-info">
+        <span class="b-pname" id="b-player-name">—</span>
+        <span class="b-plevel" id="b-player-level">Lv.1 · Ninja Novato</span>
+      </div>
+      <div class="header-vs-badge">
+        <span class="header-vs-text">VS</span>
+      </div>
+      <div style="text-align:right">
+        <span class="b-enemy-name" id="b-header-enemy-name">Enemigo</span>
+        <div class="turn-indicator" id="turn-indicator" style="margin-top:3px;font-size:10px;padding:2px 8px">TURNO</div>
       </div>
     </div>
 
-    <!-- Canvas de juego -->
-    <canvas id="gameCanvas"></canvas>
+    <!-- Enemy HP bar -->
+    <div class="combatant-bar enemy-bar">
+      <div class="name-row">
+        <span class="cname enemy-name" id="enemy-name">Enemigo</span>
+        <span class="chp" id="enemy-hp-text">100/100</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill hp" id="enemy-hp-bar" style="width:100%"></div></div>
+    </div>
 
-    <!-- Controles táctiles – layout tipo RPG móvil -->
-    <div id="controls">
+    <!-- Battle arena -->
+    <div class="battle-arena" id="battle-arena">
+      <div class="arena-bg"></div>
+      <div class="arena-ground"></div>
+      <div id="arena-particles"></div>
+      <div class="arena-vs">VS</div>
+      <div class="fighter" id="fighter-player">
+        <div class="fighter-sprite" id="sprite-player">🥷</div>
+        <div class="fighter-shadow player-shadow"></div>
+      </div>
+      <div class="fighter" id="fighter-enemy">
+        <div class="fighter-sprite" id="sprite-enemy">👹</div>
+        <div class="fighter-shadow enemy-shadow"></div>
+      </div>
+    </div>
 
-      <!-- Lado izquierdo: D-Pad / joystick virtual -->
-      <div id="dpad-zone">
-        <div id="dpad">
-          <div id="dpad-left"  class="dpad-btn">◄</div>
-          <div id="dpad-mid"></div>
-          <div id="dpad-right" class="dpad-btn">►</div>
+    <!-- Player resource bars -->
+    <div class="combatant-bar player-bar">
+      <div class="name-row">
+        <span class="cname player-name-bar" id="b-player-name2">Ninja</span>
+        <span class="chp" id="player-hp-text">100/100</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill hp" id="player-hp-bar" style="width:100%"></div></div>
+      <div class="mp-row">
+        <span class="mp-label">💧</span>
+        <div class="bar-track" style="flex:1"><div class="bar-fill mp" id="player-sp-bar" style="width:100%"></div></div>
+        <span class="chp" id="player-sp-text">50/50</span>
+      </div>
+    </div>
+
+    <!-- Status effects row -->
+    <div id="status-effects-row"></div>
+
+    <!-- Battle log -->
+    <div class="battle-log">
+      <p id="battle-log-text">¡El combate comienza! Elige tu acción...</p>
+    </div>
+
+    <!-- ═══ ACTION MENUS ═══ -->
+    <!-- Backdrop para cerrar menú al tocar fuera -->
+    <div class="menu-backdrop" id="menu-backdrop" onclick="closeAllMenus()"></div>
+
+    <div class="action-menus">
+
+      <!-- MENÚ ATAQUE -->
+      <div class="action-menu-group">
+        <button class="menu-toggle atk-toggle" onclick="toggleMenu('menu-attack')" id="toggle-attack">
+          <span class="menu-icon">⚔️</span>
+          <span class="menu-label">ATAQUE</span>
+          <span class="menu-arrow" id="arrow-attack">▼</span>
+        </button>
+        <div class="menu-dropdown" id="menu-attack">
+          <button class="menu-action-btn" id="btn-attack" onclick="playerAction('attack')">
+            <span class="ma-icon">🗡️</span>
+            <div class="ma-info">
+              <span class="ma-name">Ataque Básico</span>
+              <span class="ma-desc">Daño físico directo</span>
+            </div>
+            <span class="ma-cost">—</span>
+          </button>
+          <button class="menu-action-btn skill-action" id="btn-skill" onclick="playerAction('skill')">
+            <span class="ma-icon">💥</span>
+            <div class="ma-info">
+              <span class="ma-name" id="skill-name-label">Shadow Slash</span>
+              <span class="ma-desc">Daño alto × 1.8</span>
+            </div>
+            <span class="ma-cost mp-cost" id="skill-cost-label">20 MP</span>
+          </button>
+          <!-- Espacio para futuras habilidades -->
+          <!-- <button class="menu-action-btn locked-action">🔒 Habilidad futura</button> -->
         </div>
       </div>
 
-      <!-- Lado derecho: botones de acción -->
-      <div id="action-zone">
-        <div id="btn-skill"  class="act-btn skill-btn">
-          <span class="act-icon">✦</span>
-          <span class="act-label">SKILL</span>
-          <div class="cd-ring" id="cd-skill"></div>
-        </div>
-        <div id="btn-dash"   class="act-btn dash-btn">
-          <span class="act-icon">≫</span>
-          <span class="act-label">DASH</span>
-          <div class="cd-ring" id="cd-dash"></div>
-        </div>
-        <div id="btn-attack" class="act-btn attack-btn">
-          <span class="act-icon">⚔</span>
-          <span class="act-label">ATK</span>
-          <div class="cd-ring" id="cd-attack"></div>
+      <!-- MENÚ UTILIDAD -->
+      <div class="action-menu-group">
+        <button class="menu-toggle util-toggle" onclick="toggleMenu('menu-util')" id="toggle-util">
+          <span class="menu-icon">🛡️</span>
+          <span class="menu-label">UTILIDAD</span>
+          <span class="menu-arrow" id="arrow-util">▼</span>
+        </button>
+        <div class="menu-dropdown" id="menu-util">
+
+          <!-- Defender -->
+          <button class="menu-action-btn" id="btn-defend" onclick="playerAction('defend')">
+            <span class="ma-icon">🛡️</span>
+            <div class="ma-info">
+              <span class="ma-name">Defender</span>
+              <span class="ma-desc">Reduce daño 50% este turno</span>
+            </div>
+            <span class="ma-cost">—</span>
+          </button>
+
+          <!-- Curar — habilidad ninja base -->
+          <button class="menu-action-btn heal-action" id="btn-heal" onclick="playerAction('heal')">
+            <span class="ma-icon">💚</span>
+            <div class="ma-info">
+              <span class="ma-name">Curar</span>
+              <span class="ma-desc">Habilidad ninja · Restaura 25% HP</span>
+            </div>
+            <span class="ma-cost" id="heal-uses-label"></span>
+          </button>
+
+          <!-- Objetos — submenú desplegable -->
+          <div class="items-submenu-group">
+            <button class="menu-action-btn items-toggle" onclick="toggleItemsSubmenu()">
+              <span class="ma-icon">🎒</span>
+              <div class="ma-info">
+                <span class="ma-name">Objetos</span>
+                <span class="ma-desc">Pociones y utilidades</span>
+              </div>
+              <span class="ma-cost items-count" id="items-total-count">×0</span>
+            </button>
+            <div class="items-submenu" id="items-submenu">
+              <button class="submenu-item" id="btn-item-vida" onclick="useCombatItem('pocion-vida')">
+                <span class="ma-icon">🧪</span>
+                <div class="ma-info"><span class="ma-name">Vida</span></div>
+                <span class="item-qty" id="qty-pocion-vida">×0</span>
+              </button>
+              <button class="submenu-item" id="btn-item-mayor" onclick="useCombatItem('pocion-mayor')">
+                <span class="ma-icon">⚗️</span>
+                <div class="ma-info"><span class="ma-name">Vida Mayor</span></div>
+                <span class="item-qty" id="qty-pocion-mayor">×0</span>
+              </button>
+              <button class="submenu-item" id="btn-item-mana" onclick="useCombatItem('pocion-mana')">
+                <span class="ma-icon">💙</span>
+                <div class="ma-info"><span class="ma-name">Maná</span></div>
+                <span class="item-qty" id="qty-pocion-mana">×0</span>
+              </button>
+              <button class="submenu-item" id="btn-item-smoke" onclick="useCombatItem('smoke-bomb')">
+                <span class="ma-icon">💨</span>
+                <div class="ma-info"><span class="ma-name">Humo</span></div>
+                <span class="item-qty" id="qty-smoke-bomb">×0</span>
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
-    </div><!-- /controls -->
+    </div><!-- /action-menus -->
 
-    <!-- Overlay inicio / victoria / derrota -->
-    <div id="overlay" class="active">
-      <div id="overlay-content">
-        <div id="overlay-deco">忍</div>
-        <h1 id="overlay-title">SHADOW BLADE</h1>
-        <p  id="overlay-sub">Un ninja. Un shogun. Una batalla.</p>
-        <button id="overlay-btn">▶ COMENZAR</button>
-        <div id="controls-hint">
-          <span>⬅➡ Mover</span>
-          <span>⚔ Atacar</span>
-          <span>✦ Skill</span>
-          <span>≫ Dash</span>
+    <!-- XP bar -->
+    <div class="xp-row">
+      <span class="xp-label">XP</span>
+      <div class="xp-track"><div class="bar-fill xp" id="xp-bar" style="width:0%"></div></div>
+      <span class="xp-label" id="xp-text">0/100</span>
+    </div>
+
+  </div><!-- /screen-battle -->
+
+  <!-- ════════════════════════════════════════
+       SCREEN: SUBIDA DE NIVEL
+  ════════════════════════════════════════ -->
+  <div id="screen-levelup" class="screen">
+    <div class="levelup-header">
+      <h2>⚡ ¡SUBISTE DE NIVEL!</h2>
+      <p id="lu-level-text">Nivel 2 alcanzado</p>
+    </div>
+    <div class="auto-bonus-box">
+      <h4>✦ Bonus automático de clase</h4>
+      <div class="auto-bonuses" id="auto-bonus-list"></div>
+    </div>
+    <div class="points-display">
+      <div class="pts-number" id="pts-remaining">3</div>
+      <div class="pts-label">puntos disponibles</div>
+    </div>
+    <div class="stat-allocate" id="stat-allocate"></div>
+    <button class="btn btn-primary" id="btn-confirm-levelup" onclick="confirmLevelUp()" disabled>
+      Distribuye todos los puntos (3 restantes)
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: VICTORIA
+  ════════════════════════════════════════ -->
+  <div id="screen-victory" class="result-overlay">
+    <div class="result-card">
+      <div class="result-icon">🏆</div>
+      <div class="result-title win">¡VICTORIA!</div>
+      <div class="recovery-info" id="victory-recovery"></div>
+      <div class="result-stats">
+        <div class="result-stat-row"><span class="label">Enemigo derrotado</span><span class="value" id="v-enemy-name">—</span></div>
+        <div class="result-stat-row"><span class="label">XP ganada</span><span class="value xp-val" id="v-xp">+0</span></div>
+        <div class="result-stat-row"><span class="label">Oro obtenido</span><span class="value" id="v-gold" style="color:var(--gold)">+0 💰</span></div>
+        <div class="result-stat-row"><span class="label">Nivel actual</span><span class="value" id="v-level">1</span></div>
+      </div>
+      <!-- Drops de materiales -->
+      <div id="v-drops" style="margin:4px 0 8px;width:100%"></div>
+      <button class="btn btn-primary" onclick="startBattle()">⚔️ SEGUIR LUCHANDO</button>
+      <button class="btn btn-gold"    onclick="showScreen('hub')">⛩️ BASE NINJA</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: DERROTA
+  ════════════════════════════════════════ -->
+  <div id="screen-defeat" class="result-overlay">
+    <div class="result-card">
+      <div class="result-icon">💀</div>
+      <div class="result-title lose">DERROTA</div>
+      <div class="recovery-info" id="defeat-recovery"></div>
+      <div class="result-stats">
+        <div class="result-stat-row"><span class="label">Caíste ante</span><span class="value" id="d-enemy-name">—</span></div>
+        <div class="result-stat-row"><span class="label">Nivel alcanzado</span><span class="value" id="d-level">1</span></div>
+      </div>
+      <button class="btn btn-primary" onclick="respawn()">🔄 REINTENTAR</button>
+      <button class="btn btn-gold"    onclick="showScreen('hub')">⛩️ BASE NINJA</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: PERFIL DEL PERSONAJE
+  ════════════════════════════════════════ -->
+  <div id="screen-status" class="screen">
+    <div class="screen-title">📊 PERFIL DEL NINJA</div>
+
+    <!-- Identity card -->
+    <div class="identity-card">
+      <div class="identity-sprite" id="st-sprite">🥷</div>
+      <div class="identity-info">
+        <div class="identity-name" id="st-name">—</div>
+        <div class="identity-class" id="st-class">Ninja Novato</div>
+        <div class="identity-level" id="st-level">⚡ Nivel 1</div>
+      </div>
+      <div class="identity-wins">
+        <div class="wins-count" id="st-wins">0</div>
+        <div class="wins-label">victorias</div>
+      </div>
+    </div>
+
+    <!-- ── RECURSOS ── -->
+    <div class="section-label">⚡ RECURSOS</div>
+
+    <div class="resource-bars">
+      <!-- HP -->
+      <div class="resource-row">
+        <div class="resource-header">
+          <span class="res-icon">❤️</span>
+          <span class="res-name">HP</span>
+          <span class="res-values"><span id="st-hp-cur">0</span> / <span id="st-hp-max">0</span></span>
+        </div>
+        <div class="bar-track res-track">
+          <div class="bar-fill hp res-bar" id="st-hp-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <!-- MP -->
+      <div class="resource-row">
+        <div class="resource-header">
+          <span class="res-icon">💧</span>
+          <span class="res-name">MP</span>
+          <span class="res-values"><span id="st-mp-cur">0</span> / <span id="st-mp-max">0</span></span>
+        </div>
+        <div class="bar-track res-track">
+          <div class="bar-fill mp res-bar" id="st-mp-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <!-- XP -->
+      <div class="resource-row">
+        <div class="resource-header">
+          <span class="res-icon">✨</span>
+          <span class="res-name">XP</span>
+          <span class="res-values"><span id="st-xp-cur">0</span> / <span id="st-xp-max">100</span></span>
+        </div>
+        <div class="bar-track res-track">
+          <div class="bar-fill xp res-bar" id="st-xp-bar" style="width:0%"></div>
         </div>
       </div>
     </div>
 
-  </div><!-- /game-wrapper -->
+    <!-- ── STATS ── -->
+    <div class="section-label">🗡️ ESTADÍSTICAS</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="sc-icon">⚔️</div><div class="sc-label">ATK</div><div class="sc-value" id="st-atk">—</div></div>
+      <div class="stat-card"><div class="sc-icon">🛡️</div><div class="sc-label">DEF</div><div class="sc-value" id="st-def">—</div></div>
+      <div class="stat-card"><div class="sc-icon">⚡</div><div class="sc-label">SPD</div><div class="sc-value" id="st-spd">—</div></div>
+      <div class="stat-card"><div class="sc-icon">🎯</div><div class="sc-label">CRIT</div><div class="sc-value" id="st-crit">—</div></div>
+      <div class="stat-card"><div class="sc-icon">💨</div><div class="sc-label">DODGE</div><div class="sc-value" id="st-dodge">—</div></div>
+      <div class="stat-card"><div class="sc-icon">🏆</div><div class="sc-label">WINS</div><div class="sc-value" id="st-wins2">—</div></div>
+    </div>
 
-  <script src="game.js"></script>
+    <div class="flex-row">
+      <button class="btn btn-gold" onclick="showScreen('hub')">⛩️ BASE NINJA</button>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Confirmation modal -->
+<div id="modal-overlay" class="modal-overlay" style="display:none" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title" id="modal-title">¿Confirmar?</div>
+    <div class="modal-body"  id="modal-body">Texto del modal</div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="modal-confirm" onclick="">Confirmar</button>
+      <button class="btn btn-gold btn-sm"   onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+  <script src="script.js"></script>
+
+  <!-- ════════════════════════════════════════
+       CRAFTING OVERLAY
+  ════════════════════════════════════════ -->
+  <div id="crafting-overlay" class="crafting-overlay">
+    <div id="craft-particles"></div>
+    <div id="craft-panel">
+
+      <!-- Header -->
+      <div class="craft-header">
+        <div class="craft-title">⚗ TALLER DE CRAFTING</div>
+        <button class="btn-close-craft" onclick="closeCrafting()">✕</button>
+      </div>
+
+      <!-- Mensaje feedback -->
+      <div class="craft-msg" id="craft-msg"></div>
+
+      <!-- Recetas -->
+      <div class="craft-section-title">Recetas</div>
+      <div class="craft-recipes-list" id="craft-recipes-list">
+        <!-- renderizado por JS -->
+      </div>
+
+    </div><!-- /#craft-panel -->
+  </div><!-- /.crafting-overlay -->
+
 </body>
 </html>
