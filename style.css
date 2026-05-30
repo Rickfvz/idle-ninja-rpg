@@ -2170,7 +2170,7 @@ gap: 14px;
   width: 128px;
   height: 128px;
   /* Centrado en pecho/cintura — no tapa la cara */
-  top: 55%;
+  top: 22%;
   left: 50%;
   transform: translate(-50%, -30%);
   pointer-events: none;
